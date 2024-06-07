@@ -514,3 +514,10 @@ variable "enable_global_write_forwarding" {
   default     = false
   description = "Set to `true`, to forward writes to an associated global cluster."
 }
+
+variable "managed_root_password" {
+  type        = bool
+  default     = false
+  description = "Set to `true` to have the module manage the root password"
+  
+}
