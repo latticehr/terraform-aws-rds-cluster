@@ -169,8 +169,8 @@ resource "aws_rds_cluster" "secondary" {
   count                               = local.enabled && !local.is_regional_cluster ? 1 : 0
   cluster_identifier                  = var.cluster_identifier == "" ? module.this.id : var.cluster_identifier
   database_name                       = var.db_name
-  master_username                     = local.ignore_admin_credentials ? null : var.admin_user
-  master_password                     = local.ignore_admin_credentials ? null : (var.managed_root_password ? null : var.admin_password)
+  master_username                     = var.admin_user
+  master_password                     = var.managed_root_password ? null : var.admin_password
   backup_retention_period             = var.retention_period
   preferred_backup_window             = var.backup_window
   copy_tags_to_snapshot               = var.copy_tags_to_snapshot
