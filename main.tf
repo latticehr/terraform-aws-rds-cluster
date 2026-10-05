@@ -260,13 +260,19 @@ resource "random_pet" "instance" {
     cluster_family = var.cluster_family
     instance_class = var.serverlessv2_scaling_configuration != null ? "db.serverless" : var.instance_type
   }
+
+  # Keep the generated name stable so instance class/family changes modify
+  # instances in place instead of replacing them with new identifiers.
+  lifecycle {
+    ignore_changes = [keepers]
+  }
 }
 
 resource "aws_rds_cluster_instance" "default" {
   count                                 = local.cluster_instance_count
   identifier                            = "${random_pet.instance[0].id}-${count.index + 1}"
   cluster_identifier                    = coalesce(join("", aws_rds_cluster.primary[*].id), join("", aws_rds_cluster.secondary[*].id))
-  instance_class                        = random_pet.instance[0].keepers.instance_class
+  instance_class                        = var.serverlessv2_scaling_configuration != null ? "db.serverless" : var.instance_type
   db_subnet_group_name                  = join("", aws_db_subnet_group.default[*].name)
   db_parameter_group_name               = join("", aws_db_parameter_group.default[*].name)
   publicly_accessible                   = var.publicly_accessible
